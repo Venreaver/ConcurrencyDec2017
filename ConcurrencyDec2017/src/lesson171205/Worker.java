@@ -14,20 +14,32 @@ public class Worker implements Executor {
     }
 
     public void execute(Runnable task) {
-        tasks.offer(task);
+        try {
+            tasks.put(task);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     public void shutDown() {
-        tasks.offer(POISON_PILL);
+        try {
+            tasks.put(POISON_PILL);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     private void processTasks() {
         while (true) {
-            Runnable task = tasks.poll();
-            if (task == POISON_PILL) {
-                break;
+            try {
+                Runnable task = tasks.take();
+                if (task == POISON_PILL) {
+                    break;
+                }
+                task.run();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-            task.run();
         }
     }
 }
