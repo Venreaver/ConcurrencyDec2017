@@ -8,6 +8,7 @@ public class Worker implements Executor {
 
 	private final Object mutex = new Object();
 	private Queue<Runnable> tasks = new LinkedList<>();
+	private boolean isStopped;
 
 	public Worker() {
 		new Thread(this::processTasks).start();
@@ -20,11 +21,20 @@ public class Worker implements Executor {
 		}
 	}
 
+	public void shutDown() {
+		synchronized (mutex) {
+			isStopped = true;
+		}
+	}
+
 	private void processTasks() {
 		while (true) {
 			Runnable task = null;
 			synchronized (mutex) {
 				while (tasks.isEmpty()) {
+					if (isStopped) {
+						return;
+					}
 					try {
 						mutex.wait();
 					} catch (InterruptedException e) {
