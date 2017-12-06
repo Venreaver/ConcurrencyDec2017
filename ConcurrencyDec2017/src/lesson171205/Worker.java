@@ -16,9 +16,11 @@ public class Worker implements Executor {
 
 	public void execute(Runnable task) {
 		synchronized (mutex) {
-			tasks.offer(task);
-			mutex.notify();
-		}
+		    if (!isStopped) {
+                tasks.offer(task);
+                mutex.notify();
+            }
+        }
 	}
 
 	public void shutDown() {

@@ -14,18 +14,18 @@ public class UseWorker {
 			Utils.pause(1000);
 			System.out.println("one");
 		});
-		
+
 		worker.execute(() -> {
 			Utils.pause(1000);
 			System.out.println("two");
 		});
+
+        worker.shutDown();
 		
 		worker.execute(() -> {
 			Utils.pause(1000);
 			System.out.println("three");
 		});
-
-		worker.shutDown();
 
 		System.out.println("main finished");
 
