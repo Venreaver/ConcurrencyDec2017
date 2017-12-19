@@ -5,27 +5,27 @@ import java.util.Queue;
 
 public class MyBlockingQueue<T> {
     private final Object mutex = new Object();
-    private Queue<T> tasks = new LinkedList<>();
+    private Queue<T> items = new LinkedList<>();
 
-    public void put(T task) {
+    public void put(T item) {
         synchronized (mutex) {
-            tasks.offer(task);
+            items.offer(item);
             mutex.notify();
         }
     }
 
     public T take() {
-        T task = null;
+        T item = null;
         synchronized (mutex) {
-            while (tasks.isEmpty()) {
+            while (items.isEmpty()) {
                 try {
                     mutex.wait();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
-            task = tasks.poll();
+            item = items.poll();
         }
-        return task;
+        return item;
     }
 }
